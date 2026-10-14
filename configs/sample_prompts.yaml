@@ -1,24 +1,30 @@
 model: stabilityai/sdxl-turbo
 generation:
-  width: 512
-  height: 512
+  size: 512
   num_inference_steps: 4
   strength: 0.75
   guidance_scale: 0.0
   seed: 42
+output:
+  size: 256
+  format: JPEG
+  quality: 90
 samples:
 - id: '001'
-  input_filename: chris-saran-t3pfTW7kONU-unsplash.jpg
-  prompt: Photorealistic mountain highway winding through sunlit hills at golden hour,
-    a sports car on the road, natural landscape, detailed road surface, realistic
-    photography
+  input_filename: Mountain_landscape_(21827581301).jpg
+  source_url: https://commons.wikimedia.org/wiki/File:Mountain_landscape_(21827581301).jpg
+  prompt: Photorealistic alpine mountain landscape under a clear blue sky, rugged
+    layered rock peaks, patches of snow, green meadow with yellow wildflowers, bright
+    natural daylight, realistic landscape photography
 - id: '002'
-  input_filename: kris-tian-gGi6Ya4TqGw-unsplash.jpg
-  prompt: Photorealistic interior of a monumental multistory library, tall bookshelves,
-    central staircase, suspended large skeleton display, architectural photography,
-    realistic light and detail
+  input_filename: Mountain_landscape_in_kerala.jpg
+  source_url: https://commons.wikimedia.org/wiki/File:Mountain_landscape_in_kerala.jpg
+  prompt: Photorealistic landscape of densely forested tropical hills in Kerala, lush
+    green vegetation and shrubs in the foreground, cloudy overcast sky, natural atmospheric
+    perspective, realistic outdoor photography
 - id: '003'
-  input_filename: quan-jing-h-EkAsF3sso-unsplash.jpg
-  prompt: Photorealistic overhead photograph of an open makeup and hairstyling kit
-    with brushes, cosmetics, hairbrush, scissors and tools on a tabletop, natural
-    colors, fine detail
+  input_filename: Utah_Dunes_Landscape_-_West_Desert_District.jpg
+  source_url: https://commons.wikimedia.org/wiki/File:Utah_Dunes_Landscape_-_West_Desert_District.jpg
+  prompt: Photorealistic Utah desert landscape with sweeping pale sand dunes in the
+    foreground, distant rugged mountain range with a sunlit peak, soft warm sunset
+    light and pastel clouds, realistic landscape photography
