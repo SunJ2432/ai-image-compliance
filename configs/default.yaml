@@ -1,0 +1,11 @@
+models:
+  detector: null  # Select in A2
+  vlm: null       # Select in A3
+  llm: null       # Select in A3
+  embedding: null # Select in A4
+paths:
+  samples: samples
+  regulatory_text: kb/raw
+  reports: outputs
+settings:
+  low_confidence_verdict: needs_human_review
