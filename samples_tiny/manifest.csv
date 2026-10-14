@@ -1,0 +1,7 @@
+filename,label,source,prompt
+real/real_001.jpg,real,uploaded_photo:Mountain_landscape_(21827581301).jpg,
+ai_generated/ai_001.jpg,ai_edited,sdxl-turbo-img2img:real_001.jpg,"Photorealistic alpine mountain landscape under a clear blue sky, rugged layered rock peaks, patches of snow, green meadow with yellow wildflowers, bright natural daylight, realistic landscape photography"
+real/real_002.jpg,real,uploaded_photo:Mountain_landscape_in_kerala.jpg,
+ai_generated/ai_002.jpg,ai_edited,sdxl-turbo-img2img:real_002.jpg,"Photorealistic landscape of densely forested tropical hills in Kerala, lush green vegetation and shrubs in the foreground, cloudy overcast sky, natural atmospheric perspective, realistic outdoor photography"
+real/real_003.jpg,real,uploaded_photo:Utah_Dunes_Landscape_-_West_Desert_District.jpg,
+ai_generated/ai_003.jpg,ai_edited,sdxl-turbo-img2img:real_003.jpg,"Photorealistic Utah desert landscape with sweeping pale sand dunes in the foreground, distant rugged mountain range with a sunlit peak, soft warm sunset light and pastel clouds, realistic landscape photography"
