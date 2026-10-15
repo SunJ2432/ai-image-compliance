@@ -12,6 +12,9 @@ Image → detection → VLM description → subclassification → legal RAG → 
 4. Add `HF_TOKEN` and `KAGGLE_API_TOKEN` to Colab Secrets (use `KAGGLE_USERNAME` if your Kaggle access method needs it). Grant notebook access.
 5. Run all cells. The setup installs the package and runs a placeholder test.
 
+## Image Source
+https://commons.wikimedia.org/w/index.php?search=city&title=Special%3AMediaSearch&type=image&haslicense=unrestricted
+
 ## Status
 A0 starter scaffold only. No detection or compliance inference is implemented yet. See `CLAUDE.md`.
 
