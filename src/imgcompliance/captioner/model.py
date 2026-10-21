@@ -55,77 +55,77 @@ class Captioner:
         self._processor = None
 
     def _generate(self, image: Any, prompt: str) -> str:
-    if self.generator is not None:
-        return str(self.generator(image, prompt))
-
-    import torch
-    from PIL import Image
-    from transformers import AutoProcessor, AutoModelForImageTextToText
-
-    if self._model is None:
-        if not torch.cuda.is_available():
-            raise RuntimeError("Qwen3.5-4B requires a GPU for this Colab prototype")
-
-        self._processor = AutoProcessor.from_pretrained(
-            self.model_id,
-            trust_remote_code=True
+        if self.generator is not None:
+            return str(self.generator(image, prompt))
+    
+        import torch
+        from PIL import Image
+        from transformers import AutoProcessor, AutoModelForImageTextToText
+    
+        if self._model is None:
+            if not torch.cuda.is_available():
+                raise RuntimeError("Qwen3.5-4B requires a GPU for this Colab prototype")
+    
+            self._processor = AutoProcessor.from_pretrained(
+                self.model_id,
+                trust_remote_code=True
+            )
+    
+            self._model = AutoModelForImageTextToText.from_pretrained(
+                self.model_id,
+                torch_dtype=torch.float16,
+                device_map="auto",
+                trust_remote_code=True
+            ).eval()
+    
+        if isinstance(image, (str, Path)):
+            with Image.open(image) as opened:
+                pil_image = opened.convert("RGB")
+        else:
+            pil_image = image.convert("RGB")
+    
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image"},
+                    {"type": "text", "text": prompt}
+                ]
+            }
+        ]
+    
+        # Step 1: Format the conversation as text
+        formatted_prompt = self._processor.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
         )
-
-        self._model = AutoModelForImageTextToText.from_pretrained(
-            self.model_id,
-            torch_dtype=torch.float16,
-            device_map="auto",
-            trust_remote_code=True
-        ).eval()
-
-    if isinstance(image, (str, Path)):
-        with Image.open(image) as opened:
-            pil_image = opened.convert("RGB")
-    else:
-        pil_image = image.convert("RGB")
-
-    messages = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "image"},
-                {"type": "text", "text": prompt}
-            ]
-        }
-    ]
-
-    # Step 1: Format the conversation as text
-    formatted_prompt = self._processor.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True
-    )
-
-    # Step 2: Process text and image into tensors
-    inputs = self._processor(
-        text=[formatted_prompt],
-        images=[pil_image],
-        return_tensors="pt",
-        padding=True
-    )
-
-    inputs = inputs.to(self._model.device)
-
-    # Step 3: Generate the caption
-    with torch.inference_mode():
-        output_ids = self._model.generate(
-            **inputs,
-            max_new_tokens=self.max_new_tokens,
-            do_sample=False
+    
+        # Step 2: Process text and image into tensors
+        inputs = self._processor(
+            text=[formatted_prompt],
+            images=[pil_image],
+            return_tensors="pt",
+            padding=True
         )
-
-    # Step 4: Decode only newly generated tokens
-    generated_ids = output_ids[0][inputs["input_ids"].shape[-1]:]
-
-    return self._processor.decode(
-        generated_ids,
-        skip_special_tokens=True
-    ).strip()
+    
+        inputs = inputs.to(self._model.device)
+    
+        # Step 3: Generate the caption
+        with torch.inference_mode():
+            output_ids = self._model.generate(
+                **inputs,
+                max_new_tokens=self.max_new_tokens,
+                do_sample=False
+            )
+    
+        # Step 4: Decode only newly generated tokens
+        generated_ids = output_ids[0][inputs["input_ids"].shape[-1]:]
+    
+        return self._processor.decode(
+            generated_ids,
+            skip_special_tokens=True
+        ).strip()
 
     def describe(self, image: Any) -> dict[str, Any]:
         """Retry invalid JSON once, then return a plain-text fallback with null unknowns."""
