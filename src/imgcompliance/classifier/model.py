@@ -55,23 +55,47 @@ class Classifier:
     def _generate(self, payload: dict) -> str:
         if self.generator is not None:
             return str(self.generator(payload))
+    
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
+    
         if self._model is None:
             self._tokenizer = AutoTokenizer.from_pretrained(self.model_id)
+    
             self._model = AutoModelForCausalLM.from_pretrained(
-                self.model_id, torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                self.model_id,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
                 device_map="auto" if torch.cuda.is_available() else None
             ).eval()
+    
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ]
-        inputs = self._tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt")
+    
+        inputs = self._tokenizer.apply_chat_template(
+            messages,
+            tokenize=True,
+            add_generation_prompt=True,
+            return_dict=True,
+            return_tensors="pt"
+        )
+    
         inputs = inputs.to(self._model.device)
+    
         with torch.inference_mode():
-            output = self._model.generate(inputs, max_new_tokens=120, do_sample=False)
-        return self._tokenizer.decode(output[0][inputs.shape[-1]:], skip_special_tokens=True)
+            output = self._model.generate(
+                **inputs,
+                max_new_tokens=120,
+                do_sample=False
+            )
+    
+        generated_ids = output[0][inputs["input_ids"].shape[-1]:]
+    
+        return self._tokenizer.decode(
+            generated_ids,
+            skip_special_tokens=True
+        )
 
     def classify(self, caption: dict, detection: dict, context: dict | None = None) -> dict[str, str]:
         context = context or {}
