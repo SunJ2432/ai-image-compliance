@@ -47,7 +47,7 @@ def parse_caption_json(raw: str) -> dict[str, Any]:
 
 class Captioner:
     def __init__(self, model_id: str = "Qwen/Qwen3.5-4B", generator: Callable | None = None,
-                 max_new_tokens: int = 180):
+                 max_new_tokens: int = 512):
         self.model_id = model_id
         self.generator = generator
         self.max_new_tokens = max_new_tokens
@@ -76,8 +76,7 @@ class Captioner:
             {"type": "image", "image": pil_image}, {"type": "text", "text": prompt}
         ]}]
         inputs = self._processor.apply_chat_template(
-            messages, tokenize=True, add_generation_prompt=True,
-            return_dict=True, return_tensors="pt"
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = {k: v.to(self._model.device) if hasattr(v, "to") else v for k, v in inputs.items()}
         with torch.inference_mode():
