@@ -75,9 +75,10 @@ class Captioner:
         messages = [{"role": "user", "content": [
             {"type": "image", "image": pil_image}, {"type": "text", "text": prompt}
         ]}]
-        inputs = self._processor.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
-        )
+        formatted_prompt = self._processor.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
+
+        inputs = self._processor(text=[formatted_prompt], images=[pil_image], return_tensors="pt", padding=True)
         inputs = {k: v.to(self._model.device) if hasattr(v, "to") else v for k, v in inputs.items()}
         with torch.inference_mode():
             output_ids = self._model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=False)
